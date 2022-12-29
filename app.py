@@ -21,22 +21,40 @@ def return_output_table(vocab):
     html = f'''<br><p style="font-weight: bold;">Input word: {vocab}</p>
     <table style= "border: 1px solid black; border-collapse: collapse;">
     <tr style="background: black; color: white;">
-    <td>Word</td><td>Similarity score</td></tr>'''
+    <td>Word: tech_w2v</td><td>Similarity score: tech_w2v</td>
+    <td>Word: google_w2v</td><td>Similarity score: google_w2v</td>
+    </tr>'''
     try:
         w2v = KeyedVectors.load(os.path.join(".", "w2v", "tech_w2v.bin"),
                                 mmap='r')
+        google_w2v = KeyedVectors.load(os.path.join(".", "google_word2vec", "google_w2v_100k.bin"),
+                                       mmap='r')
         similar_words = w2v.wv.most_similar([vocab])
-        n = 1
-        for word, score in similar_words:
-            if n % 2 == 0:
+        google_similar_words = google_w2v.most_similar([vocab])
+        n = len(similar_words)
+        for i in range(n):
+            if (i+1) % 2 == 0:
                 html += f'<tr style="background: lightgray;">' \
-                        f'<td>{word}</td><td>{score}</td></tr>'
+                        f'<td>{similar_words[i][0]}</td><td>{similar_words[i][1]}</td>' \
+                        f'<td>{google_similar_words[i][0]}</td><td>{google_similar_words[i][1]}</td></tr>'
             else:
-                html += f'<tr><td>{word}</td><td>{score}</td></tr>'
-            n += 1
+                html += f'<tr>' \
+                        f'<td>{similar_words[i][0]}</td><td>{similar_words[i][1]}</td>' \
+                        f'<td>{google_similar_words[i][0]}</td><td>{google_similar_words[i][1]}</td></tr>'
         html += "</table>"
     except Exception as e:
-        html = f'<p style="color: red;">Error: {e}</p>'
+        n = len(similar_words)
+        for i in range(n):
+            if (i + 1) % 2 == 0:
+                html += f'<tr style="background: lightgray;">' \
+                        f'<td>{similar_words[i][0]}</td><td>{similar_words[i][1]}</td>' \
+                        f'</tr>'
+            else:
+                html += f'<tr>' \
+                        f'<td>{similar_words[i][0]}</td><td>{similar_words[i][1]}</td>' \
+                        f'</tr>'
+        html += "</table>"
+        # html = f'<p style="color: red;">Error: {e}</p>'
     return html
 
 
